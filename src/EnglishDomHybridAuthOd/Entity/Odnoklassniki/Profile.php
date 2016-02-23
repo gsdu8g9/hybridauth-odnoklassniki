@@ -5,11 +5,6 @@ use Hybridauth\Http\Request;
 
 class Profile extends \Hybridauth\Entity\Profile
 {
-    function getPhotoURL($width = 150, $height = 150)
-    {
-        return '';
-    }
-
     function getProfileURL()
     {
         return isset($this->profileURL) ?
@@ -34,13 +29,19 @@ class Profile extends \Hybridauth\Entity\Profile
         $bDate = static::parser('birthday', $response);
         $firstName = static::parser('first_name', $response);
         $lastName = static::parser('last_name', $response);
-
+        $location = static::parser('location', $response);
 
         $profile->setIdentifier($uid);
         $profile->setFirstName($firstName);
         $profile->setLastName($lastName);
         $profile->setDisplayName($firstName . ' ' . $lastName);
         $profile->setProfileURL($profileUrl);
+        $profile->setPhotoURL(static::parser('pic1024x768', $response));
+
+        if (isset($location->city)) {
+            $profile->setCity($location->city);
+        }
+
         if (isset($bDate)) {
             $buf = explode('-', $bDate);
             if (isset($buf[2])) {
